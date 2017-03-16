@@ -1,66 +1,83 @@
+VALUES_TO_QUALITY_LOWER_THAN_ZERO = {true => {true => -2, false => -1}, false => {true => 0, false => 0}}
+VALUES_TO_A = {true => {true => 2, false => 1}, false => {true => 0, false => 0}}
+VALUES_TO_S= {true => 1, false => 0}
+
 def update_quality(items)
-  METHODS_NAME = {
-    "quality_uper_than_zero" => {
-      "+5 Dexterity Vest" => {rest_one_quality},
-      "Elixir of the Mongoose" => {rest_one_quality},
-      "Backstage passes to a TAFKAL80ETC concert" => {},
-      "Conjured Mana Cake" => {rest_one_quality}
-    },
-    "quality_lower_than_50" => {
-      "Aged Brie" => {},
-      "Sulfuras, Hand of Ragnaros" => {},
-      "Backstage passes to a TAFKAL80ETC concert" => {},
-    }
-  }
-
   items.each do |item|
-
-    METHODS_NAME[evaluate_quality(item.quality)][item.name][item.sell_in]
-
-    def evaluate_quality(quality)
-      if quality > 0
-        "quality_uper_than_zero"
-      end
-      if quality < 50
-        "quality_lower_than_50"
-      end
+    item.quality = item.quality + send("return_quality_value_to_#{item.name[0]}".to_sym) 
+    item.sell_in -= 1
+    if item.name == 'Sulfuras, Hand of Ragnaros'
+      item.sell_in += 1
     end
-
-    if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert' && item.name != 'Sulfuras, Hand of Ragnaros'
-      if item.quality > 0
-        rest_one_quality(item)
-      end
-    end
-
-
-    if item.quality < 50
-      if item.name == 'Aged Brie' || item.name == 'Sulfuras, Hand of Ragnaros'
-        sum_one_quality(item)
-      end
-      if item.name == 'Backstage passes to a TAFKAL80ETC concert'
-        sum_one_quality(item)
-        if item.sell_in < 11
-          sum_one_quality(item)
-        end
-        if item.sell_in < 6
-          sum_one_quality(item)
-        end
-      end
-    end
-
-    rest_one_sell_in(item)
-
-    if item.name == "Aged Brie" && item.sell_in < 0 && item.quality < 50
-      sum_one_quality(item)
-    end
-
-    quality_eql_to_zero(item)
-
-    if item.name != "Aged Brie" && item.sell_in < 0 && item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros'
-      rest_one_quality(item)
-    end
+    item.save
   end
 end
+
+def return_quality_value_to_5(item)
+  VALUES_TO_QUALITY_LOWER_THAN_ZERO[quality_upper_than_zero(item)][sell_in_lower_than_zero(item)]
+end
+
+def return_quality_value_to_E(item)
+  VALUES_TO_QUALITY_LOWER_THAN_ZERO[quality_upper_than_zero(item)][sell_in_lower_than_zero(item)]
+end
+
+def return_quality_value_to_C(item)
+  VALUES_TO_QUALITY_LOWER_THAN_ZERO[quality_upper_than_zero(item)][sell_in_lower_than_zero(item)]
+end
+
+def return_quality_value_to_A(item)
+  VALUES_TO_A[quality_lower_than_fifty(item)][sell_in_lower_than_zero(item)]
+end
+
+def return_quality_value_to_S(item)
+  VALUES_TO_S[quality_lower_than_fifty(item)]
+end
+
+def return_quality_value_to_N(item)
+  VALUES_TO_A[quality_lower_than_fifty(item)][sell_in_lower_than_zero(item)]
+end
+
+def return_quality_value_to_B(item)
+  x = 0
+  if item.quality < 50
+    x =+1
+    if item.sell_in < 11
+      x =+1
+    end
+    if item.sell_in < 6
+      x =+1
+    end
+  end
+  if item.sell_in < 0 && item.quality > 0
+    x =-1
+  end
+end
+
+
+
+
+
+def quality_upper_than_zero(item)
+  item.quality > 0
+end
+
+def quality_lower_than_fifty(item)
+  item.quality < 50
+end
+
+def sell_in_lower_than_zero(item)
+  item.sell_in < 0
+end
+
+def sell_in_lower_than_six(item)
+  item.sell_in < 6
+end
+
+def sell_in_lower_than_eleven(item)
+  item.sell_in < 11
+end
+
+
 
 def sum_one_quality(item)
   item.quality += 1

@@ -1,6 +1,30 @@
 def update_quality(items)
+  METHODS_NAME = {
+    "quality_uper_than_zero" => {
+      "+5 Dexterity Vest" => {rest_one_quality},
+      "Elixir of the Mongoose" => {rest_one_quality},
+      "Backstage passes to a TAFKAL80ETC concert" => {},
+      "Conjured Mana Cake" => {rest_one_quality}
+    },
+    "quality_lower_than_50" => {
+      "Aged Brie" => {},
+      "Sulfuras, Hand of Ragnaros" => {},
+      "Backstage passes to a TAFKAL80ETC concert" => {},
+    }
+  }
 
   items.each do |item|
+
+    METHODS_NAME[evaluate_quality(item.quality)][item.name][item.sell_in]
+
+    def evaluate_quality(quality)
+      if quality > 0
+        "quality_uper_than_zero"
+      end
+      if quality < 50
+        "quality_lower_than_50"
+      end
+    end
 
     if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert' && item.name != 'Sulfuras, Hand of Ragnaros'
       if item.quality > 0
@@ -10,10 +34,11 @@ def update_quality(items)
 
 
     if item.quality < 50
-      if item.name == 'Aged Brie' || item.name == 'Backstage passes to a TAFKAL80ETC concert' || item.name == 'Sulfuras, Hand of Ragnaros'
+      if item.name == 'Aged Brie' || item.name == 'Sulfuras, Hand of Ragnaros'
         sum_one_quality(item)
       end
       if item.name == 'Backstage passes to a TAFKAL80ETC concert'
+        sum_one_quality(item)
         if item.sell_in < 11
           sum_one_quality(item)
         end

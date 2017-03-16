@@ -1,49 +1,51 @@
 def update_quality(items)
+
   items.each do |item|
-    if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert'
+    if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert' && item.name != 'Sulfuras, Hand of Ragnaros'
       if item.quality > 0
-        if item.name != 'Sulfuras, Hand of Ragnaros'
-          item.quality -= 1
-        end
+        item.quality -= 1
       end
     else
       if item.quality < 50
-        item.quality += 1
+        sum_one_quality(item)
         if item.name == 'Backstage passes to a TAFKAL80ETC concert'
           if item.sell_in < 11
-            if item.quality < 50
-              item.quality += 1
-            end
+            sum_one_quality(item)
           end
           if item.sell_in < 6
-            if item.quality < 50
-              item.quality += 1
-            end
+            sum_one_quality(item)
           end
         end
       end
     end
     if item.name != 'Sulfuras, Hand of Ragnaros'
-      item.sell_in -= 1
+      rest_one_sell_in(item)
     end
     if item.sell_in < 0
       if item.name != "Aged Brie"
         if item.name != 'Backstage passes to a TAFKAL80ETC concert'
-          if item.quality > 0
-            if item.name != 'Sulfuras, Hand of Ragnaros'
-              item.quality -= 1
-            end
+          if item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros'
+            item.quality -= 1
           end
         else
-          item.quality = item.quality - item.quality
+          item.quality = 0
         end
       else
         if item.quality < 50
-          item.quality += 1
+          sum_one_quality(item)
         end
       end
     end
   end
+end
+
+def sum_one_quality(item)
+  item.quality += 1
+end
+
+
+def rest_one_sell_in(item)
+  item.sell_in -= 1
 end
 
 # DO NOT CHANGE THINGS BELOW -----------------------------------------

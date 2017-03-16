@@ -1,40 +1,38 @@
 def update_quality(items)
 
   items.each do |item|
+
     if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert' && item.name != 'Sulfuras, Hand of Ragnaros'
       if item.quality > 0
-        item.quality -= 1
+        rest_one_quality(item)
       end
-    else
-      if item.quality < 50
+    end
+
+
+    if item.quality < 50
+      if item.name == 'Aged Brie' || item.name == 'Backstage passes to a TAFKAL80ETC concert' || item.name == 'Sulfuras, Hand of Ragnaros'
         sum_one_quality(item)
-        if item.name == 'Backstage passes to a TAFKAL80ETC concert'
-          if item.sell_in < 11
-            sum_one_quality(item)
-          end
-          if item.sell_in < 6
-            sum_one_quality(item)
-          end
-        end
       end
-    end
-    if item.name != 'Sulfuras, Hand of Ragnaros'
-      rest_one_sell_in(item)
-    end
-    if item.sell_in < 0
-      if item.name != "Aged Brie"
-        if item.name != 'Backstage passes to a TAFKAL80ETC concert'
-          if item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros'
-            item.quality -= 1
-          end
-        else
-          item.quality = 0
+      if item.name == 'Backstage passes to a TAFKAL80ETC concert'
+        if item.sell_in < 11
+          sum_one_quality(item)
         end
-      else
-        if item.quality < 50
+        if item.sell_in < 6
           sum_one_quality(item)
         end
       end
+    end
+
+    rest_one_sell_in(item)
+
+    if item.name == "Aged Brie" && item.sell_in < 0 && item.quality < 50
+      sum_one_quality(item)
+    end
+
+    quality_eql_to_zero(item)
+
+    if item.name != "Aged Brie" && item.sell_in < 0 && item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros'
+      rest_one_quality(item)
     end
   end
 end
@@ -43,9 +41,20 @@ def sum_one_quality(item)
   item.quality += 1
 end
 
+def rest_one_quality(item)
+  item.quality -= 1
+end
+
+def quality_eql_to_zero(item)
+  if item.name == 'Backstage passes to a TAFKAL80ETC concert' && item.sell_in < 0
+    item.quality = 0
+  end
+end
 
 def rest_one_sell_in(item)
-  item.sell_in -= 1
+  if item.name != 'Sulfuras, Hand of Ragnaros'
+    item.sell_in -= 1
+  end
 end
 
 # DO NOT CHANGE THINGS BELOW -----------------------------------------

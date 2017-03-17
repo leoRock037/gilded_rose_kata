@@ -1,3 +1,5 @@
+#refactored by Cristian Benitez and David Arevalo
+
 def update_quality(items)
   items.each do |item|
     rest_one_quality_when_no_aged_no_sulfuras_no_backstage_and_quality_upper_than_zero(item)

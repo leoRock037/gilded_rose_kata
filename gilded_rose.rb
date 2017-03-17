@@ -1,76 +1,58 @@
 #refactored by Cristian Benitez and David Arevalo
 
+VALUE_TRUE = {true => 1, false => 0}
+VALUE_TRUE_TRUE = {true => { true => 1, false => 0}, false => { true => 0, false => 0}}
+VALUE_TRUE_TRUE_TRUE = {true => { true => {true => 1, false => 0}, false => {true => 0, false => 0}}, false => { true => {true => 0, false => 0}, false => {true => 0, false => 0}}}
+VALUE_TRUE_TRUE_TRUE_TRUE = {true => { true => {true => { true => 1, false => 0}, false => {true => 0, false => 0}}, false => {true => {true => 0, false => 0}, false => {true => 0, false => 0}}}, false => { true => {true => {true => 0, false => 0}, false => {true => 0, false => 0}}, false => {true => {true => 0, false => 0}, false => {true => 0, false => 0}}}}
+
 def update_quality(items)
   items.each do |item|
-    rest_one_quality_when_no_aged_no_sulfuras_no_backstage_and_quality_upper_than_zero(item)
-    sum_one_quality_when_name_and_quality_lower_than_fifty(item, "Aged")
-    sum_one_quality_when_name_and_quality_lower_than_fifty(item, "Sulfuras")
-    sum_one_quality_when_name_and_quality_lower_than_fifty(item, "Backstage")
-    sum_one_quality_when_backstage_and_quality_lower_than_fifty_and_sell_in_lower_than_number(item, 11)
-    sum_one_quality_when_backstage_and_quality_lower_than_fifty_and_sell_in_lower_than_number(item, 6)
-    rest_one_sell_in(item) 
-    sum_one_quality_when_aged_sell_lower_than_zero_and_quality_lower_than_fifty(item)
-    quality_eql_to_zero(item)
-    rest_one_quality_when_no_aged_no_sulfuras_and_sell_lower_than_zero_and_quality_upper_than_zero(item)
+    rest_one_quality_when_no_name_and_no_name_and_no_name_and_quality_upper_than_number(item, "Aged", "Backstage", "Sulfuras", 0)
+    ["Aged","Sulfuras","Backstage"].each {|i| sum_one_quality_when_name_and_quality_lower_than_number(item, i, 50)}
+    [11,6].each { |i| sum_one_quality_when_name_and_quality_lower_than_number_and_sell_in_lower_than_number(item, "Backstage", 50, i)}
+    rest_one_sell_whe_no_name(item,"Sulfuras")
+    sum_one_quality_when_name_and_quality_lower_than_number_and_sell_in_lower_than_number(item, "Aged", 50, 0)
+    quality_eql_to_zero_when_name_and_sell_lower_than_number(item,"Backstage",0)
+    rest_one_quality_when_no_name_and_no_name_and_quality_upper_than_number_and_sell_lower_than_number(item,"Aged","Sulfuras",0,0)
   end
 end
 
 private
 
-  def sum_one_quality_when_backstage_and_quality_lower_than_fifty_and_sell_in_lower_than_number(item, number)
-    sum_one_quality(item) if quality_lower_than_fifty(item) && name_include?(item,'Backstage') && sell_in_lower_than(item, number)
+  def sum_one_quality_when_name_and_quality_lower_than_number_and_sell_in_lower_than_number(item,  name, q_number, s_number)
+    item.quality += VALUE_TRUE_TRUE_TRUE[number_lower_than_number?(item.quality,q_number)][name_include?(item,name)][number_lower_than_number?(item.sell_in,s_number)]
   end
 
-  def sum_one_quality_when_name_and_quality_lower_than_fifty(item, name)
-    sum_one_quality(item) if quality_lower_than_fifty(item) && name_include?(item,name)
+  def sum_one_quality_when_name_and_quality_lower_than_number(item, name, q_number)
+    item.quality += VALUE_TRUE_TRUE[number_lower_than_number?(item.quality, q_number)][name_include?(item,name)]
   end
 
-  def rest_one_quality_when_no_aged_no_sulfuras_no_backstage_and_quality_upper_than_zero(item)
-    rest_one_quality(item) if !name_include?(item,'Aged') && !name_include?(item,'Backstage') && !name_include?(item,'Sulfuras') && quality_upper_than_zero?(item)
+  def rest_one_quality_when_no_name_and_no_name_and_no_name_and_quality_upper_than_number(item, name_1, name_2, name_3, q_number)
+    item.quality -= VALUE_TRUE_TRUE_TRUE_TRUE[!name_include?(item,name_1)][!name_include?(item,name_2)][!name_include?(item,name_3)][number_upper_than_number?(item.quality,q_number)]
   end
 
-  def rest_one_quality_when_no_aged_no_sulfuras_and_sell_lower_than_zero_and_quality_upper_than_zero(item)
-    rest_one_quality(item) if !name_include?(item,"Aged") && !name_include?(item,"Sulfuras") && sell_in_lower_than_zero?(item) && quality_upper_than_zero?(item)
+  def rest_one_quality_when_no_name_and_no_name_and_quality_upper_than_number_and_sell_lower_than_number(item,name_1,name_2,q_number,s_number)
+    item.quality -= VALUE_TRUE_TRUE_TRUE_TRUE[!name_include?(item,name_1)][!name_include?(item,name_2)][number_lower_than_number?(item.sell_in,s_number)][number_upper_than_number?(item.quality,q_number)]
   end
 
-  def sum_one_quality_when_aged_sell_lower_than_zero_and_quality_lower_than_fifty(item)
-    sum_one_quality(item) if name_include?(item,"Aged") && sell_in_lower_than_zero?(item) && quality_lower_than_fifty(item)
+  def rest_one_sell_whe_no_name(item,name)
+    item.sell_in -= VALUE_TRUE[!name_include?(item,name)]
+  end
+
+  def quality_eql_to_zero_when_name_and_sell_lower_than_number(item,name,s_number)
+    item.quality = 0 if name_include?(item, name) && number_lower_than_number?(item.sell_in,s_number)
   end
 
   def name_include?(item, name)
     item.name.include?(name)
   end
 
-  def sell_in_lower_than(item, number)
-    item.sell_in < number
+  def number_lower_than_number?(number_a, number_b)
+    number_a < number_b
   end
 
-  def quality_lower_than_fifty(item)
-    item.quality < 50
-  end
-
-  def sell_in_lower_than_zero?(item)
-    item.sell_in < 0
-  end
-
-  def quality_upper_than_zero?(item)
-    item.quality > 0
-  end
-
-  def sum_one_quality(item)
-    item.quality += 1
-  end
-
-  def rest_one_quality(item)
-    item.quality -= 1
-  end
-
-  def quality_eql_to_zero(item)
-    item.quality = 0 if name_include?(item, 'Backstage') && sell_in_lower_than_zero?(item)
-  end
-
-  def rest_one_sell_in(item)
-    item.sell_in -= 1 if !name_include?(item,"Sulfuras")
+  def number_upper_than_number?(number_a, number_b)
+    number_a > number_b
   end
 
 # DO NOT CHANGE THINGS BELOW -----------------------------------------
